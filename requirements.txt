@@ -1,0 +1,2 @@
+pyad
+pypiwin32

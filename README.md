@@ -16,18 +16,19 @@ Includes:
 ## Installation
 
 <ol>
+<li>Install a Windows Domain Controller and if required a file server and a Windows Client</li>
+<li>Install Python on the computer on which you want to run this student management software.</li>
+<li>Download or clone the software from Github.</li>
+<li>Navigate in downloaded folder</li>
 <li>Use the package manager [pip](https://pip.pypa.io/en/stable/) to install requirements.
 
 ```bash
 pip install -r requirements.txt
 ```
 </li>
-<li>Install a Windows Domain Controller and if required a file server and a Windows Client</li>
-<li>Install Python on the computer on which you want to run this student management software.</li>
-<li>Download or clone the software from Github.</li>
 <li>Copy or rename <i>settings-template.py</i> to <i>settings.py</i> and enter the appropriate data of your domain.</li>
-<li>In VBScript <i>vbScripts/installPrerequisitesDC.vbs</i>, specify your domain name and run the script as the domain administrator on the domain controller.</li>
-<li>Run VBScript <i>vbScripts/installPrerequisitesFS.vbs</i> as the domain administrator on the file server.</li>
+<li>In VBScript <i>vbScripts/installPrerequisitesDC.vbs</i>, specify your domain name and run the script as the <b>domain administrator on the domain controller</b>.</li>
+<li>Run VBScript <i>vbScripts/installPrerequisitesFS.vbs</i> as the <b>domain administrator on the file server</b>.</li>
 </ol>
 
 ## Program start
