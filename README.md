@@ -1,5 +1,5 @@
 # AD-StudentManagement
-<p>Development of a simple Active Directory - Student Management System in Python for teaching purposes</p>
+<p>Development of a simple Active Directory - Student Management System in Python for teaching purposes. It is assumed that a pupil is exactly in one school class.</p>
 
 Supports  
 <ul>
@@ -19,7 +19,7 @@ Includes:
 <li>Install a Windows Domain Controller and if required a file server and a Windows Client</li>
 <li>Install Python on the computer on which you want to run this student management software.</li>
 <li>Download and unzip or clone the software from Github.</li>
-<li>Navigate to downloaded or cloned folder</li>
+<li>Navigate to downloaded and unzipped or cloned folder</li>
 <li>Use the package manager [pip](https://pip.pypa.io/en/stable/) to install requirements.
 
 ```bash
@@ -45,14 +45,18 @@ pip install -r requirements.txt
 ## Program start
 
 ```bash
-python importStudents.py
+python importStudents.py [path to csv import file]
+```
+Example:
+```bash
+python importStudents.py import/students.csv
 ```
 
 ## Testing
 
-Start the test program with 
+Start the test program with unit tests
 ```bash
-pytest testImportStudents.py
+testImportStudents.py
 ```
 
 ## Contributing
