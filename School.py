@@ -1,6 +1,6 @@
 from Settings import Settings
 from Ldap import PyAD
-from CSV import Csv
+from Csv import Csv
 from User import Student
 
 class School:                           
@@ -27,7 +27,6 @@ class School:
     def addToLDAP(self):    # export whole school to Active Directory
         for schoolClass in self.__schoolClasses:
             schoolClass.addToLDAP()
-    
     
 class SchoolClass:
     def __init__(self,name, students):

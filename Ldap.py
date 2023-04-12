@@ -19,6 +19,10 @@ class AbstractLDAP(ABC):
     def deleteSchoolClass(self, nameSchoolClass):
         pass
 
+    @abstractmethod
+    def getSchoolClasses(self):
+        pass
+
 from pyad import *
 from Settings import Settings
 from Fileserver import *
@@ -97,9 +101,7 @@ class PyAD(AbstractLDAP):
             fs = Fileserver()
             fs.createProjectDirStudent(nameSchoolClass)
             fs.addShareProjectDirStudent(nameSchoolClass)
-
-            
-   
+ 
     def deleteSchoolClass(self, nameSchoolClass):
         dnSchoolClass = "ou="+nameSchoolClass+", "+ self._dnStudents
         query = adquery.ADQuery()
@@ -126,3 +128,13 @@ class PyAD(AbstractLDAP):
             fs.deleteProjectDirStudent(nameSchoolClass)
             fs.deleteShareProjectDirStudent(nameSchoolClass)
             
+    def getSchoolClasses(self):
+        query = adquery.ADQuery()
+        query.execute_query(attributes = ["ou"],
+            where_clause=("ou = '*' and ou <> 'Students'"),
+            base_dn = self._dnStudents)
+        schoolClasses = []
+        result = query.get_results()        
+        for schoolClass in result:
+            schoolClasses.append(schoolClass['ou'][0])
+        return schoolClasses

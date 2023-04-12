@@ -1,3 +1,1 @@
-Change CSV.py on moodle course for compatibilty reason (rel. path)
-importStudent.py needs comand line parameter of rel. path of import file.
 Diff has to be programmed
