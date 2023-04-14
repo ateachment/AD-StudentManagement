@@ -20,7 +20,7 @@ class User:                                                 # superclass "User"
         return self._password
 
     def getDateOfBirth(self):
-        return self._DateOfBirth
+        return self._dateOfBirth
 
     def getUsername(self):
         return self._username
@@ -37,7 +37,7 @@ class Student(User):    # subclass "Student" inherits every property and method 
 
     def addToLDAP(self):
         ldap = PyAD(Settings.dnStudents)
-        ldap.createStudent(self._username
+        self._username = ldap.createStudent(self._username
                                , self._surname
                                , self._firstname
                                , self._password
