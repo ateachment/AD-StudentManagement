@@ -1,1 +1,2 @@
 Diff has to be programmed
+username has to be changed in class Student after LDAP export on website

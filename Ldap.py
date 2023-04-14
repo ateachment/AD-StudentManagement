@@ -60,7 +60,8 @@ class PyAD(AbstractLDAP):
                                                             , "homeDirectory":Settings.shareHomeStudents + "\\" + username})   # set home directory
                 # put new student in global group of its school class
                 gl_groupSchoolClass = pyad.from_dn("cn=GL_" + nameSchoolClass + ", " + Settings.dnGLGroups)   
-                gl_groupSchoolClass.add_members([student])                       
+                gl_groupSchoolClass.add_members([student])           
+        return username            
 
 
     def deleteStudent(self, username, nameSchoolClass):
@@ -131,10 +132,22 @@ class PyAD(AbstractLDAP):
     def getSchoolClasses(self):
         query = adquery.ADQuery()
         query.execute_query(attributes = ["ou"],
-            where_clause=("ou = '*' and ou <> 'Students'"),
+            where_clause=("ou = '*' and ou <> 'Students'"),     # exclude users and base dn
             base_dn = self._dnStudents)
         schoolClasses = []
         result = query.get_results()        
         for schoolClass in result:
             schoolClasses.append(schoolClass['ou'][0])
         return schoolClasses
+    
+    def getStudents(self, nameSchoolClass):
+        dnSchoolClass = "ou="+nameSchoolClass + ", " + self._dnStudents
+        query = adquery.ADQuery()
+        query.execute_query(attributes = ['cn'],                # username       
+            where_clause=("ou <> '" + nameSchoolClass + "'"),   # exclude base dn   
+            base_dn = dnSchoolClass)
+        students = []
+        result = query.get_results()       
+        for student in result:
+            students.append(student['cn'])
+        return students
