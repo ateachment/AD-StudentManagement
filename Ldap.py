@@ -29,7 +29,6 @@ from Fileserver import *
 
 class PyAD(AbstractLDAP):
     def createStudent(self, username, surname, firstname, password, dateOfBirth, nameSchoolClass):
-        dnSchoolClass = "ou=" + nameSchoolClass + ", " + self._dnStudents
         query = adquery.ADQuery()
         cnUnique = False
         numChar = 0
@@ -63,7 +62,7 @@ class PyAD(AbstractLDAP):
                 gl_groupSchoolClass.add_members([student])           
         return username            
 
-
+    '''
     def deleteStudent(self, username, nameSchoolClass):
         dnSchoolClass = "ou="+nameSchoolClass + ", " + self._dnStudents
         query = adquery.ADQuery()
@@ -73,6 +72,20 @@ class PyAD(AbstractLDAP):
         if query.get_row_count() == 1:                              # if student exists => delete it
             ouSchoolClass = pyad.adcontainer.ADContainer(dnSchoolClass, adsi_ldap_com_object=None, options={})
             ouSchoolClass.from_cn(username).delete()
+    '''
+    def deleteStudent(self, surname, firstname, dateOfBirth, nameSchoolClass):
+        # print("delete ", surname, firstname, dateOfBirth, nameSchoolClass)
+        dnSchoolClass = "ou="+nameSchoolClass + ", " + self._dnStudents
+        query = adquery.ADQuery()
+        query.execute_query(attributes = ["cn"],
+                where_clause=("sn = '" + surname + "' and givenName = '" + firstname + "' and employeeID = '" + dateOfBirth + "'"),
+                base_dn = dnSchoolClass)
+        if query.get_row_count() >= 1:                              # if student exists => delete it
+            ouSchoolClass = pyad.adcontainer.ADContainer(dnSchoolClass, adsi_ldap_com_object=None, options={})
+            fs = Fileserver()
+            for row in query.get_results():
+                ouSchoolClass.from_cn(row["cn"]).delete()
+                fs.deleteHomeDirStudent(row["cn"])
    
     def createSchoolClass(self, nameSchoolClass):
         query = adquery.ADQuery()
@@ -111,12 +124,12 @@ class PyAD(AbstractLDAP):
                 base_dn = self._dnStudents)
         if query.get_row_count() == 1:                          # if school class exists
             query = adquery.ADQuery()
-            query.execute_query(attributes = ["cn"],
+            query.execute_query(attributes = ["sn", "givenName", "employeeID"],
                 where_clause=("cn = '*'"),
                 base_dn = dnSchoolClass)
             if query.get_row_count() > 0:                       # if school class not empty 
                 for row in query.get_results():                 # delete students
-                    self.deleteStudent(row["cn"], nameSchoolClass)
+                    self.deleteStudent(row["sn"], row["givenName"], row["employeeID"],  nameSchoolClass)
             ouSchoolClass = pyad.adcontainer.ADContainer(dnSchoolClass, adsi_ldap_com_object=None, options={})
             ouSchoolClass.delete()                              # delete school class ou
             # delete global and domaine local groups of school class
@@ -143,11 +156,28 @@ class PyAD(AbstractLDAP):
     def getStudents(self, nameSchoolClass):
         dnSchoolClass = "ou="+nameSchoolClass + ", " + self._dnStudents
         query = adquery.ADQuery()
-        query.execute_query(attributes = ['cn'],                # username       
-            where_clause=("ou <> '" + nameSchoolClass + "'"),   # exclude base dn   
+        query.execute_query(attributes = ['sn', 'givenName', 'employeeID'],
+                    # surname, firstname, employeeID holds date of birth       
+        # query.execute_query(attributes = ['cn', 'sn', 'givenName', 'employeeID'],  
+                    # username, surname, firstname, employeeID holds date of birth       
+            where_clause=("ou <> '" + nameSchoolClass + "'"),     # exclude base dn   
             base_dn = dnSchoolClass)
         students = []
         result = query.get_results()       
         for student in result:
-            students.append(student['cn'])
+            # students.append(student['cn'], [student['sn'], student['givenName'], student['employeeID']])
+            students.append([student['sn'], student['givenName'], student['employeeID']])
         return students
+    
+    def findStudent(self, surname, firstname, dateOfBirth):
+        # print("find ", surname, firstname, dateOfBirth)
+        query = adquery.ADQuery()
+        query.execute_query(attributes = ["distinguishedName"],
+                where_clause=("sn = '" + surname + "' and givenName = '" + firstname + "' and employeeID = '" + dateOfBirth + "'"),
+                base_dn = Settings.dnStudents)
+        if query.get_row_count() >= 1:                              
+            for row in query.get_results():
+                # i.e. row["distinguishedName"] = CN=Colligan,OU=c1,OU=Students,OU=SchoolUsers,DC=trainingX,DC=net
+                className = row["distinguishedName"].split(",")[1].split("=")[1]
+                return className
+        return ""   # not found -> not already in other school class

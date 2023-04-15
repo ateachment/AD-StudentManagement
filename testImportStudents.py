@@ -33,11 +33,11 @@ class TestImportStudents(unittest.TestCase):
         self.assertEqual(students[0].getUsername(),'Miller', 'Students username wrong.')
 
     def test_AddToLDAP(self):
-        
-        # remove school classes and/or students if there are any left
+        # remove school classes and/or students if there are any left in AD
         ldap = PyAD(Settings.dnStudents) 
         classNames = ldap.getSchoolClasses()
         for className in classNames:
+            # print("delete school class: " + className)
             ldap.deleteSchoolClass(className)
         
         self.school.addToLDAP()
@@ -45,7 +45,8 @@ class TestImportStudents(unittest.TestCase):
         classNames = ldap.getSchoolClasses()
         self.assertEqual(classNames, ['c1', 'c2'], 'From ldap returned school classes wrong.')
         students = ldap.getStudents('c1')
-        self.assertEqual(students, ["Miller","Smith"], 'From ldap returned students wrong.')
+        self.assertEqual(students, [["Miller", "Sam", "22.11.2004"], ["Smith", "Jake", "13.02.2003"]], 'From ldap returned students wrong.')
+        # clean up
         schoolClasses = self.school.getSchoolClasses()
         for schoolClass in schoolClasses:
             schoolClass.deleteFromLDAP()
@@ -53,13 +54,12 @@ class TestImportStudents(unittest.TestCase):
         self.assertEqual(classNames, [], 'Ldap returns still school classe(s). Still not empty.')
 
     def test_ImportCsvFile(self):
-        # remove school classes and/or students if there are any left
+        # remove school classes and/or students if there are any left in AD
         ldap = PyAD(Settings.dnStudents) 
         classNames = ldap.getSchoolClasses()
         for className in classNames:
             ldap.deleteSchoolClass(className)
         
-        #self.student3 = Student("Tarleton","Vito","22.02.2004",self.schoolClass2)
         school = School([])
         school.importStudentsFromCSV("import/students.csv")
         school.addToLDAP()
@@ -68,7 +68,7 @@ class TestImportStudents(unittest.TestCase):
         
         self.assertEqual(classNames, ['c1', 'c2'], 'From ldap returned school classes wrong.')
         students = ldap.getStudents('c1')
-        self.assertEqual(students, ["Colligan","Thieme"], 'From ldap returned students wrong.')
+        self.assertEqual(students, [["Colligan", "Manda", "22.09.2004"], ["Thieme", "Madelaine", "02.12.2000"]], 'From ldap returned students wrong.')
         
         school2 = School([])
         school2.importStudentsFromCSV("import/students2.csv")
@@ -80,13 +80,15 @@ class TestImportStudents(unittest.TestCase):
         school2.addToLDAP()
         classNames = ldap.getSchoolClasses()
         self.assertEqual(classNames, ['c1', 'c3'], 'From ldap returned school classes wrong.')
+        students = ldap.getStudents('c1')
+        self.assertEqual(students, [["Colligan", "Manda", "22.09.2004"], ["Belafonte", "Harry", "01.03.1927"]], 'From ldap returned students wrong.')
+        students = ldap.getStudents('c3')
+        self.assertEqual(students, [["Tarleton","Vito","22.02.2004"]], 'From ldap returned students wrong.')
 
-
-
+        # clean up
+        classNames = ldap.getSchoolClasses()
         for className in classNames:
             ldap.deleteSchoolClass(className)
-        
-    
 
 if __name__ == '__main__':
     unittest.main()

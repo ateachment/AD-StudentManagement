@@ -25,6 +25,7 @@ class Fileserver():
     def deleteHomeDirStudent(self, username):
         homeDir = Settings.shareHomeStudents + "\\" + username
         if os.path.exists(homeDir) == True:             # if home dir exists
+            #os.system('rmdir /S /Q "{}"'.format(homeDir))
             shutil.rmtree(homeDir, ignore_errors=True)  # remove dir with content recursively            
 
     def createProjectDirStudent(self, nameSchoolClass):

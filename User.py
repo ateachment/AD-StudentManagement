@@ -37,19 +37,36 @@ class Student(User):    # subclass "Student" inherits every property and method 
 
     def addToLDAP(self):
         ldap = PyAD(Settings.dnStudents)
-        self._username = ldap.createStudent(self._username
+        # add to ldap if not already in school class
+        alreadyInOtherClass = ldap.findStudent(self._surname , self._firstname, self._dateOfBirth)
+        if alreadyInOtherClass == self.__schoolClass.getName():
+            pass # do nothing
+        elif alreadyInOtherClass == "": # not already in another school class -> create
+            self._username = ldap.createStudent(self._username
                                , self._surname
                                , self._firstname
                                , self._password
                                , self._dateOfBirth
                                , self.__schoolClass.getName())
 
-        fs = Fileserver()
-        fs.createHomeDirStudent(self._username)
+            fs = Fileserver()
+            fs.createHomeDirStudent(self._username)   
+        else:   # already in another school class 
+                # -> delete and recreate student for simplicity reason
+            ldap = PyAD(Settings.dnStudents)
+            ldap.deleteStudent(self._surname, self._firstname, self._dateOfBirth, alreadyInOtherClass)
+            fs = Fileserver()
+            fs.deleteHomeDirStudent(self._username)
+            self._username = ldap.createStudent(self._username
+                               , self._surname
+                               , self._firstname
+                               , self._password
+                               , self._dateOfBirth
+                               , self.__schoolClass.getName())
     
     def deleteFromLDAP(self):
         ldap = PyAD(Settings.dnStudents)
-        ldap.deleteStudent(self._username, self.__schoolClass.getName())
+        ldap.deleteStudent(self._surname, self._firstname, self._dateOfBirth, self.__schoolClass.getName())
 
         fs = Fileserver()
         fs.deleteHomeDirStudent(self._username)
