@@ -60,7 +60,7 @@ class PyAD(AbstractLDAP):
                 # put new student in global group of its school class
                 gl_groupSchoolClass = pyad.from_dn("cn=GL_" + nameSchoolClass + ", " + Settings.dnGLGroups)   
                 gl_groupSchoolClass.add_members([student])           
-        return username            
+        return username    # return possibly modified username     
 
     '''
     def deleteStudent(self, username, nameSchoolClass):
@@ -124,7 +124,7 @@ class PyAD(AbstractLDAP):
                 base_dn = self._dnStudents)
         if query.get_row_count() == 1:                          # if school class exists
             query = adquery.ADQuery()
-            query.execute_query(attributes = ["sn", "givenName", "employeeID"],
+            query.execute_query(attributes = ["sn", "givenName", "employeeID"],  # employeeID holds date of birth
                 where_clause=("cn = '*'"),
                 base_dn = dnSchoolClass)
             if query.get_row_count() > 0:                       # if school class not empty 

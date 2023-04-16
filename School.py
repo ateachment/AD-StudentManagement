@@ -24,7 +24,7 @@ class School:
                 student = Student(listStudent[0],listStudent[1],listStudent[2],schoolClass)
             self.addSchoolClass(schoolClass)
 
-    def addToLDAP(self):    # export whole school to Active Directory
+    def addToLDAP(self):        # export whole school to Active Directory
         for schoolClass in self.__schoolClasses:
             schoolClass.addToLDAP()
     

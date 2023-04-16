@@ -38,10 +38,11 @@ class Student(User):    # subclass "Student" inherits every property and method 
     def addToLDAP(self):
         ldap = PyAD(Settings.dnStudents)
         # add to ldap if not already in school class
-        alreadyInOtherClass = ldap.findStudent(self._surname , self._firstname, self._dateOfBirth)
-        if alreadyInOtherClass == self.__schoolClass.getName():
+        foundStudentSchoolClass = ldap.findStudent(self._surname , self._firstname, self._dateOfBirth)
+        if foundStudentSchoolClass == self.__schoolClass.getName():
             pass # do nothing
-        elif alreadyInOtherClass == "": # not already in another school class -> create
+        elif foundStudentSchoolClass == "": # not already in another school class -> create student
+            # ldap.createStudent() returns the possibly modified username for updating
             self._username = ldap.createStudent(self._username
                                , self._surname
                                , self._firstname
@@ -54,7 +55,7 @@ class Student(User):    # subclass "Student" inherits every property and method 
         else:   # already in another school class 
                 # -> delete and recreate student for simplicity reason
             ldap = PyAD(Settings.dnStudents)
-            ldap.deleteStudent(self._surname, self._firstname, self._dateOfBirth, alreadyInOtherClass)
+            ldap.deleteStudent(self._surname, self._firstname, self._dateOfBirth, foundStudentSchoolClass)
             fs = Fileserver()
             fs.deleteHomeDirStudent(self._username)
             self._username = ldap.createStudent(self._username

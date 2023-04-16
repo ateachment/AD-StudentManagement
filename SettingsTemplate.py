@@ -1,6 +1,6 @@
 class Settings:
     domainName = "trainingX.net"
-    dnSchool = "dc=trainingX, dc=net"                       # Distinguished of domaine
+    dnSchool = "dc=trainingX, dc=net"                       # Distinguished Name of domaine
     dnStudents = "ou=Students, ou=SchoolUsers, " + dnSchool # Distinguished Name of OU Students
 
     dnGLGroups = "ou=GL-Groups, " + dnSchool                # Distinguished Name of OU GL- and DL-Groups
