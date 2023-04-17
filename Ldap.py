@@ -19,10 +19,6 @@ class AbstractLDAP(ABC):
     def deleteSchoolClass(self, nameSchoolClass):
         pass
 
-    @abstractmethod
-    def getSchoolClasses(self):
-        pass
-
 from pyad import *
 from Settings import Settings
 from Fileserver import *
@@ -62,17 +58,6 @@ class PyAD(AbstractLDAP):
                 gl_groupSchoolClass.add_members([student])           
         return username    # return possibly modified username     
 
-    '''
-    def deleteStudent(self, username, nameSchoolClass):
-        dnSchoolClass = "ou="+nameSchoolClass + ", " + self._dnStudents
-        query = adquery.ADQuery()
-        query.execute_query(attributes = ["cn"],
-                where_clause=("cn = '" + username + "'"),
-                base_dn = dnSchoolClass)
-        if query.get_row_count() == 1:                              # if student exists => delete it
-            ouSchoolClass = pyad.adcontainer.ADContainer(dnSchoolClass, adsi_ldap_com_object=None, options={})
-            ouSchoolClass.from_cn(username).delete()
-    '''
     def deleteStudent(self, surname, firstname, dateOfBirth, nameSchoolClass):
         # print("delete ", surname, firstname, dateOfBirth, nameSchoolClass)
         dnSchoolClass = "ou="+nameSchoolClass + ", " + self._dnStudents

@@ -1,4 +1,4 @@
-from School import *                        # import classes
+from School import *                            # import classes
 from User import *
 from Csv import Csv 
 from Ldap import PyAD
@@ -43,6 +43,8 @@ if __name__ == "__main__":
     importStudents = school.importStudentsFromCSV(filename)      # import students
     print("Delete obsolete school classes ...")
     deleteObsoleteSchoolClassesFromAD(school)
+    print("Delete obsolete student accounts from the Active Directory and add new ones ...")
     school.addToLDAP()
+    print("Done!")
 
 

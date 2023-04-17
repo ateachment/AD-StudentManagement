@@ -1,5 +1,0 @@
-username has to be changed in class Student after LDAP export on website
-  and check if User.py still on website ok (deleteFromLDAP)
-
-def deleteStudent in Ldap.py has changed on website
-
